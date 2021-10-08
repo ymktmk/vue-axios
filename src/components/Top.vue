@@ -12,10 +12,10 @@
           <th>content</th>
         </tr>
       </thead>
-      <tbody v-for="todo in todos" :key="todo.Id">
+      <tbody v-for="todo in todos" :key="todo.id">
         <tr>
-          <td>{{ todo.Id }}</td>
-          <td>{{ todo.Content }}</td>
+          <td>{{ todo.id }}</td>
+          <td>{{ todo.content }}</td>
           <button v-on:click="deleteTodo(todo)">削除</button>
         </tr>
       </tbody>
@@ -53,7 +53,7 @@
       },
       methods: {
         deleteTodo: function(todo) {
-          axios.delete('/api/todos/' + todo.Id)
+          axios.delete('/api/todos/' + todo.id)
           .then((res) => {
             var index = this.todos.indexOf(todo)
             this.todos.splice(index, 1)
@@ -62,6 +62,9 @@
         },
         createTodo() {
           axios.post('/api/todos/',{
+            headers: {
+              'Content-Type': 'application/json'
+            },
             content: this.$refs.content.value
           }).then((res) => {
             this.$refs.content.value = ''
