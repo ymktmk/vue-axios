@@ -1,14 +1,28 @@
 <template>
   <div class="hello">
     <h1>Todo App</h1>
-    <p>フロントエンドVue.js、バックエンドGoで構成しています</p>
+    <p>フロントエンドVue.js、バックエンドGoで構成しています</p><br>
 
-    <h1>タスク一覧</h1>
-    <div v-for="todo in todos" :key="todo.Id">
-      <p>id: {{ todo.Id }} todo: {{ todo.Content }}</p>
-    </div>
+    <h2>タスク一覧</h2>
 
-    <form v-on:submit.prevent="submit">
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>content</th>
+        </tr>
+      </thead>
+      <tbody v-for="todo in todos" :key="todo.Id">
+        <tr>
+          <td>{{ todo.Id }}</td>
+          <td>{{ todo.Content }}</td>
+          <button v-on:click="deleteTodo(todo)">削除</button>
+        </tr>
+      </tbody>
+    </table>
+
+    <br><br>
+    <form v-on:submit.prevent="createTodo">
       <!-- content -->
       <p>Todoを記入してください</p>
       <input type="text" ref="content"><br><br>
@@ -20,6 +34,7 @@
 
 <script>
   import axios from 'axios'
+
   export default {
       data: function () {
           return {
@@ -27,29 +42,32 @@
             content: ''
           }
       },
-      created: function() {
-        this.getTodos()
+      mounted: function() {
+        axios.get('/api/todos/',{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res) => {
+          this.todos = res.data || []
+        })
       },
       methods: {
-        getTodos: function() {
-          axios.get('http://localhost:9000/api/todos/',{
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }).then((res) => {
-            this.todos = res.data
+        deleteTodo: function(todo) {
+          axios.delete('/api/todos/' + todo.Id)
+          .then((res) => {
+            var index = this.todos.indexOf(todo)
+            this.todos.splice(index, 1)
+            console.log(res.data)
           })
         },
-        submit() {
-          console.log(this.$refs.content.value)
-          const params = new URLSearchParams();
-          params.append('content', this.$refs.content.value);
-          axios.post('http://localhost:9000/api/todos/',{
-            headers: {
-              'Content-Type': 'application/json'
-            },
+        createTodo() {
+          axios.post('/api/todos/',{
+            content: this.$refs.content.value
           }).then((res) => {
-            alert(JSON.stringify(res.data))
+            this.$refs.content.value = ''
+            // idを入れる必要がある
+            this.todos.push(res.data)
+            console.log(res.data)
           }).catch(err => {
             if(err.response) {
               console.log("error")
@@ -63,6 +81,20 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+table {
+  text-align: center;
+  margin: auto;
+}
+
+h1 {
+  color: #42b983;
+}
+
+h2 {
+  color: #42b983;
+}
+
 h3 {
   margin: 40px 0 0;
 }
