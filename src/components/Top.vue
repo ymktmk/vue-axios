@@ -23,7 +23,6 @@
 
     <br><br>
     <form v-on:submit.prevent="createTodo">
-      <!-- content -->
       <p>Todoを記入してください</p>
       <input type="text" ref="content"><br><br>
       <input type="submit" value="追加">
@@ -68,7 +67,6 @@
             content: this.$refs.content.value
           }).then((res) => {
             this.$refs.content.value = ''
-            // idを入れる必要がある
             this.todos.push(res.data)
             console.log(res.data)
           }).catch(err => {
