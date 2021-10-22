@@ -23,7 +23,6 @@
 
     <br><br>
     <form v-on:submit.prevent="createTodo">
-      <!-- content -->
       <p>Todoを記入してください</p>
       <input type="text" ref="content"><br><br>
       <input type="submit" value="追加">
@@ -55,8 +54,10 @@
         deleteTodo: function(todo) {
           axios.delete('/api/todos/' + todo.id)
           .then((res) => {
-            var index = this.todos.indexOf(todo)
-            this.todos.splice(index, 1)
+            // リダイレクトする
+            this.$router.go({path: this.$router.currentRoute.path, force: true})
+            // var index = this.todos.indexOf(todo)
+            // this.todos.splice(index, 1)
             console.log(res.data)
           })
         },
@@ -68,8 +69,10 @@
             content: this.$refs.content.value
           }).then((res) => {
             this.$refs.content.value = ''
-            // idを入れる必要がある
-            this.todos.push(res.data)
+            // リダイレクトする
+            this.$router.go({path: this.$router.currentRoute.path, force: true})
+            // 配列に挿入
+            // this.todos.push(res.data)
             console.log(res.data)
           }).catch(err => {
             if(err.response) {
